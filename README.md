@@ -1,4 +1,20 @@
-unskewed-bagging
+Unskewed Bagging (Under Bagging and Roughly Balanced Bagging)
 ================
 
 A WEKA compatible implementation of the Under Bagging and Roughly Balanced Bagging meta classification techniques
+
+A parameter on this classifier allows the user to swap between Under Bagging and Roughly Balanced Bagging.
+
+Roughly Balanced Bagging is a technique designed to deal with skewed class distributions. Hido and Kashima[1] are the creators of the Roughly Balanced Bagging classifier where the idea is to apply under-sampling of the majority class in a controlled bagging setting. The results achieved in their investigation indicated their Roughly Balanced Bagging classifier was capable of outperforming AdaBoost and RIPPER techniques on the nine datasets they applied classifiers to.
+
+Using a Bagging framework, Roughly Balanced Bagging builds a specified number of instance sets for a number of base classifier iterations to learn from. In order to work better on skewed datasets, Roughly Balanced Bagging uses under-sampling of the majority class to get a new, less skewed, distribution of classes. However, it does not simply match the number directly, instead, it uses a negative binomial sampling technique and probability threshold to control how many examples of each class make it into each training set. The result is that each of the Bagging iterations will contain almost the same number of instances from each class, but it will vary a little bit with each one. Hido and Kashima[1] argue their technique better mimics the intentions of the basic Bagging classifier.
+
+The minority example threshold is a configurable value between 0 and 1. It is set to give the chance of drawing a minority class example on each step of the drawing process. The drawing stops when the size of the set of minority class examples drawn reaches the number of the minority class training examples available (this does not mean all the minority examples are present as selection is performed with replacement), a lower value will mean more majority class examples make it in, whereas a higher value will mean less majority class examples make it into each set of instances. The default value of 0.5 will produce instance sets with almost exactly the same number of majority examples as minority examples.
+
+Under Bagging is essentially a simplified version of the Roughly Balanced Bagging technique. It is a bespoke technique developed during my Masters work to deal with skewed class distribution problems specifically. This is accomplished in much the same way as Roughly Balanced Bagging, but without the focus on maintaining the Bagging style of instance selection. The result is a more predictable classification scheme than Roughly Balanced Bagging, but with the remaining advantages of the Bagging ensemble method.
+
+Under Bagging, like Roughly Balanced Bagging, uses the Bagging process inherently. This means that any specified number of under bagged iterations can be performed using the Under Bagging instance selection method. However, unlike Roughly Balanced Bagging, Under Bagging selects the same number of instances for each of its iterations, based on a once of calculation giving a final bag size. This method involves sampling with replacement from the minority and majority class to create a user-specified ratio of minority to majority class examples.
+
+Under Bagging requires a single extra parameter. However this parameter works differently due to Under Bagging always using a fixed minority class example size; the size of the original set of all minority class examples. The bag size factor parameter allows for selection of the number of majority class examples in each iteration of bagging as a factor of the number of minority class examples. A bag size factor value of 1.0 would mean each iteration of the base classifier would have an equal number of majority and minority class examples. The size of the training set in each run of the classifier would be twice the number of minority examples available. By raising (more majority class) or lowering (less majority class) the ratio of minority to majority class examples can be altered.
+
+1) S. Hido and H. Kashima. Roughly Balanced Bagging for Imbalanced Data. In Proceedings of the SIAM International Conference on Data Mining, pages 143-152, 2008
